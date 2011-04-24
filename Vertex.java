@@ -2,7 +2,7 @@ import java.awt.Graphics;
 
 public class Vertex {
 
-	private int[] koordinate = {0,0,0,0,0,0,0}; // x, y, +/-, team, player, quarter, time
+	private int[] koordinate = {0,0,0,0,0,0,0,0}; // x, y, +/-, punkte, team, player, quarter, time
 	
 	public Vertex(int x, int y)
 	{
@@ -37,6 +37,16 @@ public class Vertex {
 	public void setY(int y)
 	{
 		koordinate[1] = y;
+	}
+	
+	public int  getPunkt()
+	{
+	    return koordinate[3];
+	}
+	
+	public void setPunkt(int c)
+	{
+	    koordinate[3] = c;
 	}
 	
 	public void zeichne(Graphics g)

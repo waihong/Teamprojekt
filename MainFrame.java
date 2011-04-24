@@ -48,6 +48,7 @@ public class MainFrame extends JFrame implements ActionListener
     // Punktestand
     private int[] punktestand = new int[2];
     
+    private JLabel punktestand_label = new JLabel("Punktestand: " + punktestand[0] + " : " + punktestand[1]);
     // zum Ressetten des Feldes
     private boolean clearFlag;
     
@@ -96,6 +97,22 @@ public class MainFrame extends JFrame implements ActionListener
                 clearFlag = true;
                 if(wurfFlag && plusMinusFlag != 0) //Playerbedingung fehlt
                 {
+                    if(pl.getLastVertex().getPunkt() == 1)
+                    {
+                        punktestand[0] += 1;
+                        punktestand_label.setText("Punktestand: " + punktestand[0] + " : " + punktestand[1]);
+                        
+                    }
+                    else if(pl.getLastVertex().getPunkt() == 2)
+                    {
+                        punktestand[0] += 2;
+                        punktestand_label.setText("Punktestand: " + punktestand[0] + " : " + punktestand[1]);
+                    }
+                    if(pl.getLastVertex().getPunkt() == 3)
+                    {
+                        punktestand[0] += 3;
+                        punktestand_label.setText("Punktestand: " + punktestand[0] + " : " + punktestand[1]);
+                    }
                     reset();
                 }              
                 bl.repaint();
@@ -129,6 +146,9 @@ public class MainFrame extends JFrame implements ActionListener
                         //Ja == 0; Nein == 1
                         if(eingabe == 0)
                         {
+                            //Punktestand aktualisieren
+                            punktestand[0] -= getPunkteListe().getLastVertex().getPunkt();
+                            punktestand_label.setText("Punktestand: " + punktestand[0] + " : " + punktestand[1]);
                             //Entferne letzten Vertex
                             getPunkteListe().remove(getPunkteListe().size()-1);
                         }
@@ -177,9 +197,7 @@ public class MainFrame extends JFrame implements ActionListener
         minus_btn.addActionListener(minus);          
         //----------------------------------------------
         //----- Layout ---------------------------------
-        int a = punktestand[0];
-        int b = punktestand[1];
-        JLabel punktestand = new JLabel("Punktestand: " + a + " : " + b);
+        punktestand_label.setText("Punktestand: " + punktestand[0] + " : " + punktestand[1]);
         
         Container c = this.getContentPane();
         GridBagLayout gbl = new GridBagLayout();
@@ -192,7 +210,7 @@ public class MainFrame extends JFrame implements ActionListener
         addComponent(c, gbl, minus_btn, 2, 5, 1, 1, 0, 0);
         addComponent(c, gbl, corr_btn, 1, 6, 1, 1, 0, 0);
         addComponent(c, gbl, okay_btn, 2,6, 1, 1, 0, 0);
-        addComponent(c, gbl, punktestand, 1,16, 2, 2, 0, 0);
+        addComponent(c, gbl, punktestand_label, 1,16, 2, 2, 0, 0);
         addComponent(c, gbl, wurf_panel, 1,8, 4, 4, 0, 0);
         //------------------------------------------
 
@@ -296,6 +314,17 @@ public class MainFrame extends JFrame implements ActionListener
     public void setClearFlag(boolean c)
     {
         clearFlag = c;
+    }
+    
+    public int[] getPunktestand()
+    {
+        return punktestand;
+    }
+    
+    public void setPunktestand(int x, int y)
+    {
+        punktestand[0] = x;
+        punktestand[1] = y;
     }
     
     public static void main(String[] args) throws InterruptedException

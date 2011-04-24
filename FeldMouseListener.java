@@ -133,14 +133,18 @@ MouseMotionListener
             if (pixel == hf.getDreier())
             {
                 System.out.println("3PTS");
+                // 3 in Vertex eintragen, um zu kennzeichnen, dass es sich um einen 3er handelt
+                hf.getPunkteListe().getLastVertex().setPunkt(3);
             }
             else if (pixel == hf.getZweier())
             {
                 System.out.println("2PTS ");
+                hf.getPunkteListe().getLastVertex().setPunkt(2);
             }
             else if (pixel == hf.getZone())
             {
                 System.out.println("2PTS PAINT");
+                hf.getPunkteListe().getLastVertex().setPunkt(2);
             }
 
             System.out.println("Anz Koordinaten: " + hf.getPunkteListe().size());
