@@ -6,13 +6,13 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class MainFrame extends JFrame implements ActionListener
@@ -21,11 +21,14 @@ public class MainFrame extends JFrame implements ActionListener
     
     private BufferedImage buf, buf_gray;
     
+    // Prüft, ob ein Player angeklickt wurde
     private boolean playerFlag = false;
+    // Prüft, ob das Wurffeld angeklickt wurde
     private boolean wurfFlag = false;
-    private int plusMinusFlag = 0;      // 0 = nicht gedrückt, 1 = +, 2 = -
-    private boolean okay_flag = false;
-    
+    // Prüft, ob + oder - angeklickt wurde 
+    // 0 = nicht gedrückt, 1 = +, 2 = -
+    private int plusMinusFlag = 0;    
+
     private final JButton plus_btn = new JButton("+");
     private final JButton minus_btn = new JButton("-");
     private final JButton okay_btn = new JButton("OK");
@@ -41,9 +44,12 @@ public class MainFrame extends JFrame implements ActionListener
     
     // Wurf-Anklick-Feld
     private final BballLabel bl;
-    
+
     // Punktestand
     private int[] punktestand = new int[2];
+    
+    // zum Ressetten des Feldes
+    private boolean clearFlag;
     
     public MainFrame(String title) throws InterruptedException
     {
@@ -52,8 +58,8 @@ public class MainFrame extends JFrame implements ActionListener
         //-------Bild laden-----------------------
         try 
         {
-            buf = ImageIO.read(new File("bballfeld.png")); 
-            buf_gray = ImageIO.read(new File("bballfeld_gray.png")); 
+            buf = ImageIO.read(getClass().getResource("bballfeld.png")); 
+            buf_gray = ImageIO.read(getClass().getResource("bballfeld_gray.png")); 
         }
         catch(IOException e)
         {
@@ -62,8 +68,9 @@ public class MainFrame extends JFrame implements ActionListener
         //------------------------------------------
         pl = new PunkteListe();
         // erst Feld anklicken, dann erst PlusMinus aktivieren
-        plus_btn.setEnabled(false);
-        minus_btn.setEnabled(false);
+        // erst PlusMinus drücken, dann aktivieren
+        reset();
+        
         //----- Anklickfeld/ Wurfbilder ----------------------------
         JPanel wurf_panel = new JPanel();
         wurf_panel.setLayout(new BorderLayout());
@@ -80,14 +87,14 @@ public class MainFrame extends JFrame implements ActionListener
         
         bl = new BballLabel(buf, this, bf2, bf3);
         //----- Buttons --------------------------------
-        PlayerPanel player_btn = new PlayerPanel(this);
         //-----------------------------------------------------
         //--------- ACTIONLISTENER-----------------------------
         ActionListener okayListener= new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                if(wurfFlag && plusMinusFlag != 0) //Playerbedingung
+                clearFlag = true;
+                if(wurfFlag && plusMinusFlag != 0) //Playerbedingung fehlt
                 {
                     reset();
                 }              
@@ -102,17 +109,37 @@ public class MainFrame extends JFrame implements ActionListener
         {
             public void actionPerformed(ActionEvent e)
             {
-                // Koordinatenanzahl senken
+                // falls Feld angeklickt wurde, Koordinatenanzahl senken
                 if(wurfFlag)
                 {
                     //Entferne letzten Vertex
                     getPunkteListe().remove(getPunkteListe().size()-1);
+                    // feld wird gecleared, damit der letzte Vertex nicht angezeigt wird
+                    clearFlag = true;
                 }       
+                else
+                {
+                    // Dialog soll nur erscheinen, wenn bereits Würfe registriert wurden
+                    if(pl.size()>0)
+                    {
+                        int eingabe = JOptionPane.showConfirmDialog(null,
+                                      "Letzte Wurfaktion wirklich löschen?",
+                                      null,
+                                      JOptionPane.YES_NO_OPTION);
+                        //Ja == 0; Nein == 1
+                        if(eingabe == 0)
+                        {
+                            //Entferne letzten Vertex
+                            getPunkteListe().remove(getPunkteListe().size()-1);
+                        }
+                    }
+                }
+                
                 // alles resetten
                 reset();
-                bl.repaint();
                 wl2.repaint();
                 wl3.repaint();
+                bl.repaint();
             } 
         };
         corr_btn.addActionListener(corrListener);
@@ -122,6 +149,7 @@ public class MainFrame extends JFrame implements ActionListener
             public void actionPerformed(ActionEvent e)
             {
                 setPlusMinusFlag(1);
+                okay_btn.setEnabled(true);
                 pl.getLastVertex().getkoordinate()[2] = 1;
                 plus_btn.setEnabled(false);
                 minus_btn.setEnabled(true);
@@ -136,6 +164,7 @@ public class MainFrame extends JFrame implements ActionListener
             public void actionPerformed(ActionEvent e)
             {
                 setPlusMinusFlag(2);
+                okay_btn.setEnabled(true);
                 pl.getLastVertex().getkoordinate()[2] = 2;
                 plus_btn.setEnabled(true);
                 minus_btn.setEnabled(false);
@@ -157,7 +186,7 @@ public class MainFrame extends JFrame implements ActionListener
         c.setLayout( gbl );
         //
 
-        addComponent(c, gbl, player_btn, 0, 0, 1, 12, 0, 0);
+        //addComponent(c, gbl, player_btn, 0, 0, 1, 12, 0, 0);
         addComponent(c, gbl, bl, 1, 0, 2, 5, 0, 0);
         addComponent(c, gbl, plus_btn, 1, 5, 1, 1, 0, 0);
         addComponent(c, gbl, minus_btn, 2, 5, 1, 1, 0, 0);
@@ -166,7 +195,8 @@ public class MainFrame extends JFrame implements ActionListener
         addComponent(c, gbl, punktestand, 1,16, 2, 2, 0, 0);
         addComponent(c, gbl, wurf_panel, 1,8, 4, 4, 0, 0);
         //------------------------------------------
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocation(200, 400);
         //setSize(400, 300);
         pack();
@@ -198,6 +228,7 @@ public class MainFrame extends JFrame implements ActionListener
         plusMinusFlag = 0;      
         minus_btn.setEnabled(false);
         plus_btn.setEnabled(false);
+        okay_btn.setEnabled(false);
     }
     public boolean getWurfFlag()
     {
@@ -257,16 +288,27 @@ public class MainFrame extends JFrame implements ActionListener
         minus_btn.setEnabled(c);
     }
     
-    public boolean getOkayFlag()
+    public boolean getClearFlag()
     {
-        return okay_flag;
+        return clearFlag;
+    }
+    
+    public void setClearFlag(boolean c)
+    {
+        clearFlag = c;
     }
     
     public static void main(String[] args) throws InterruptedException
     {
-        new MainFrame("Scouting");
+        try
+        {
+            new MainFrame("Scouting");
+        }
+        catch(InterruptedException e)
+        {
+            System.out.println(e);
+        }
     }
-
     @Override
     public void actionPerformed(ActionEvent e)
     {

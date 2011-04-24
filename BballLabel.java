@@ -46,9 +46,9 @@ public class BballLabel extends JLabel
         {
             g.setColor(Color.RED);
         }
-        
+
         // zeichne aktuellen Punkt
-        hf.getPunkteListe().zeichne(g);
+        hf.getPunkteListe().zeichne(g,hf.getClearFlag());
         
         // Farbe für Textanzeige
         g.setColor(Color.BLACK);

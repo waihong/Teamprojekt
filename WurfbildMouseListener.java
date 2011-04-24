@@ -7,15 +7,12 @@ public class WurfbildMouseListener implements MouseListener,
 MouseMotionListener
 {
     private WurfbildLabel bl;
-    private MainFrame hf;
-    
     // aktuelle Mauskoordinaten
     private int[] mousepos = new int[2];
     
     public WurfbildMouseListener(WurfbildLabel bl, MainFrame hf)
     {
         this.bl = bl;
-        this.hf = hf;
     }
     
     public int[] getMousepos()

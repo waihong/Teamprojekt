@@ -11,11 +11,14 @@ public class PunkteListe extends ArrayList<Vertex>
 		super();
 	}
 	
-	public void zeichne(Graphics g) 
+	public void zeichne(Graphics g, boolean clearFlag) 
 	{
 		if(this.size() != 0)
 		{
-		    this.getLastVertex().zeichne(g);
+		    if(!clearFlag)
+		    {
+		        this.getLastVertex().zeichne(g);
+		    }
 		}
 	}
 	public void zeichneAlle(Graphics g, int[] mousepos) 

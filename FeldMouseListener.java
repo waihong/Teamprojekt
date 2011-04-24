@@ -101,13 +101,22 @@ MouseMotionListener
             mousepos[0] = e.getX();
             mousepos[1] = e.getY();
             
-            // plus-minus-buttons aktivieren
-            hf.setPlus_btn(true);
-            hf.setMinus_btn(true);
+            // damit das feld gecleared wird wenn ok oder corr gedrückt wird
+            hf.setClearFlag(false);
+            
+            // wenn zuerst + oder - gedrückt wurde und im nachhinein das feld geändert wird, 
+            // sollen die buttons unverändert bleiben (aktiviert bzw. deaktiviert)
+            if (hf.getPlusMinusFlag() == 0)
+            {           
+                // plus-minus-buttons erst aktivieren, nachdem auf das feld geklickt wurde
+                hf.setPlus_btn(true);
+                hf.setMinus_btn(true);     
+            }
 
-            // Punkt als gesetzt markieren
+            // Überprüfen, ob bereits Punkt gesetzt wurde
             if (!hf.getWurfFlag())
             {
+                // Punkt als gesetzt markieren
                 hf.setWurfFlag(true);
                 // in Koordinatenliste einfügen
                 hf.getPunkteListe().add(new Vertex(e.getX(), e.getY()));
@@ -151,6 +160,7 @@ MouseMotionListener
         mousepos[0] = e.getX();
         mousepos[1] = e.getY();
         pixel = buf.getRGB(e.getX(), e.getY());  
+
         bl.repaint();
         bf2_label.repaint();
         bf3_label.repaint();
@@ -161,7 +171,8 @@ MouseMotionListener
     {
         mousepos[0] = e.getX();
         mousepos[1] = e.getY();
-        pixel = buf.getRGB(e.getX(), e.getY());  
+        pixel = buf.getRGB(e.getX(), e.getY()); 
+
         bl.repaint();
         bf2_label.repaint();
         bf3_label.repaint();
