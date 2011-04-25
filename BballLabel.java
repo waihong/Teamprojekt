@@ -20,7 +20,6 @@ public class BballLabel extends JLabel
     private final int zx = 15;
     
 
-
     public BballLabel(BufferedImage buf, MainFrame hf, JPanel bf2, JPanel bf3)
     {
         super(new ImageIcon(buf));                              // Bild in ImageIcon laden);
